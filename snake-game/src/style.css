@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+main {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-area {
+  border: 5px solid black;
+  height: 400px;
+  width: 700px;
+  margin-bottom: 50px;
+}
+
+.user-menu {
+  margin-bottom: 20px;
+}
