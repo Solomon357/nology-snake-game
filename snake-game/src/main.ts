@@ -1,52 +1,69 @@
 import './style.css'
 
-
-
 const player = document.querySelector<HTMLDivElement>('#player')!;
-player.focus(); // do the player is automatically focused on page
+// const gameArea  = document.querySelector<HTMLElement>('.game-area')!;
+
+//getting CSS styles 
+const playerStyleTop = getComputedStyle(player).getPropertyValue('top')
+const playerStyleLeft = getComputedStyle(player).getPropertyValue('left')
+//output test
+let currentXPosOutput = document.querySelector<HTMLParagraphElement>('#playerX')!;
+let currentYPosOutput = document.querySelector<HTMLParagraphElement>('#playerY')!;
+currentYPosOutput.innerHTML = `current Y position: ${playerStyleTop}`;
+currentXPosOutput.innerHTML = `current X position: ${playerStyleLeft}`;
 
 
-// this event function will handle all player movement
-const handlePlayerKeyPress = (event: KeyboardEvent) => {
-    const target = <HTMLDivElement>event.currentTarget;
-    console.log(event.key);// test 
-    target.focus(); // not sure if i need this yet
-    //event.stopPropagation()
+const handlePlayerMovement1 = (e: KeyboardEvent) => {
+  e.preventDefault(); // to prevent arrows scrolling the window up
 
-    if(event.key === "ArrowRight" || event.key === "d"){
-        let currentLeftPos: string | number = target.style.left; // type string or number because im going to be converting between the 2
-        currentLeftPos = currentLeftPos.replace("px", "");
-        // console.log(currentLeftPos) // test
-        currentLeftPos = +currentLeftPos + 20;
-        currentLeftPos = `${currentLeftPos}px`
-        target.style.left = currentLeftPos;
+  // "player.style.${attr}" is of type "CSSInlineStyle" so in order for this to work how I expect I need the top and left attributes of player to be inline styles beforehand
+  let currentYPos: string | number = player.style.top;
+  let currentXPos: string | number = player.style.left;
 
-    } else if(event.key === "ArrowLeft" || event.key === "a"){
-        let currentLeftPos: string | number = target.style.left; 
-        currentLeftPos = currentLeftPos.replace("px", "");
-        // console.log(currentLeftPos) // test
-        currentLeftPos = +currentLeftPos - 20; // minus value in order to go backwards
-        currentLeftPos = `${currentLeftPos}px`
-        target.style.left = currentLeftPos;
+  // if(+currentXPos < 0 || +currentXPos > 680 ){
+  //    // run the game over functionality
+  //     return;
+  // }
 
-        // console.log(target.style.left)
-    } else if(event.key === "ArrowUp" || event.key === "w"){
-        let currentTopPos: string | number = target.style.top; // getting the
-        currentTopPos = currentTopPos.replace("px", "");
-        // console.log(currentLeftPos) // test
-        currentTopPos = +currentTopPos - 20; // because minus
-        currentTopPos = `${currentTopPos}px`
-        target.style.top = currentTopPos;
+  currentYPos = currentYPos.replace("px", ""); // e.g. currentYPos = "20"
+  currentXPos = currentXPos.replace("px", ""); // e.g. currentXPos = "0"
 
-        // console.log(target.style.left)
-    } else if (event.key === "ArrowDown" || event.key === "s"){
-        let currentTopPos: string | number = target.style.top;
-        currentTopPos = currentTopPos.replace("px", "");
-        // console.log(currentLeftPos) // test
-        currentTopPos = +currentTopPos + 20; // in order to go backwards
-        currentTopPos = `${currentTopPos}px`
-        target.style.top = currentTopPos;
-    }
+  switch(e.key){
+    case "ArrowUp":
+      currentYPos = +currentYPos - 20;
+      player.style.top = `${currentYPos}px`;
+      // console.log(player.style.top)
+      // show change to the user
+      currentYPosOutput.innerHTML = `current Y position: ${player.style.top}`;
+      break;
+
+    case "ArrowDown":
+      currentYPos = +currentYPos + 20;
+      player.style.top = `${currentYPos}px`;
+      // console.log(player.style.top);
+      // show change to the user
+      currentYPosOutput.innerHTML = `current Y position: ${player.style.top}`;
+      break; 
+
+    case "ArrowLeft":
+      currentXPos = +currentXPos - 20 
+      player.style.left = `${currentXPos}px`;
+      // console.log(player.style.left)
+      // show change to the user
+      currentXPosOutput.innerHTML = `current X position: ${player.style.left}`;
+      break; 
+
+    case "ArrowRight":
+      currentXPos = +currentXPos + 20 
+      player.style.left = `${currentXPos}px`;
+      // console.log(player.style.left)
+      // show change to the user
+      currentXPosOutput.innerHTML = `current X position: ${player.style.left}`;
+      break; 
+
+    default:
+      break;
+  }
 }
 
-player.addEventListener("keydown", handlePlayerKeyPress)
+document.addEventListener("keydown", handlePlayerMovement1);
