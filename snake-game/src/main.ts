@@ -31,6 +31,7 @@ const handleMoveUp = (XPosition: string | number, YPosition: string | number) =>
     player.style.top = `${YPosition}px`;
     // console.log(player.style.top)
   } else{
+    clearInterval(intervalId);
     player.style.top = `${YPosition}px`;
   }
   return YPosition;
@@ -41,6 +42,7 @@ const handleMoveDown = (XPosition:string | number, YPosition: string | number) =
     player.style.top = `${YPosition}px`;
     // console.log(player.style.top)
   } else{
+    clearInterval(intervalId);
     player.style.top = `${YPosition}px`;
   }
   return YPosition;
@@ -50,6 +52,8 @@ const handleMoveLeft = (XPosition: string | number, YPosition: string | number) 
     XPosition = +XPosition - 20;
     player.style.left = `${XPosition}px`;
   } else {
+    //clean up interval 
+    clearInterval(intervalId);
     player.style.top = `${XPosition}px`;
   }
   return XPosition;
@@ -60,6 +64,7 @@ const handleMoveRight = (XPosition: string | number, YPosition: string | number)
     player.style.left = `${XPosition}px`;
     // console.log(player.style.top)
   } else{
+    clearInterval(intervalId);
     player.style.top = `${XPosition}px`;
   }
   return XPosition;
@@ -68,7 +73,6 @@ const handleMoveRight = (XPosition: string | number, YPosition: string | number)
 const handlePlayerMovement = (e: KeyboardEvent) => {
   e.preventDefault(); // to prevent arrows scrolling the window up
   e.stopPropagation(); //not sure if i need this just yet
-
   // "player.style.${attr}" is of type "CSSInlineStyle" so in order for this to work how I expect I need the top and left attributes of player to be inline styles beforehand
   let currentYPos: string | number = player.style.top;
   let currentXPos: string | number = player.style.left;
@@ -99,6 +103,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
       break; 
 
     case "ArrowLeft":
+      debugger;
       clearInterval(intervalId);
       intervalId = setInterval(() => {
         currentXPos = handleMoveLeft(currentXPos, currentYPos);
