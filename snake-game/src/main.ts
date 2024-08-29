@@ -1,28 +1,76 @@
-import './style.css'
+import './style.css';
+
+// TODO: 1. WILL PROBABLY NEED ANOTHER FUNCTION TO HANDLE any GAMEOVER condition
+//       2. will need to incorporate food pellets moving on player overlap and score system 
 
 const player = document.querySelector<HTMLDivElement>('#player')!;
-// const gameArea  = document.querySelector<HTMLElement>('.game-area')!;
 
 //getting CSS styles 
 const playerStyleTop = getComputedStyle(player).getPropertyValue('top')
 const playerStyleLeft = getComputedStyle(player).getPropertyValue('left')
 
+const gameArea  = document.querySelector<HTMLElement>('.game-area')!;
+const food = document.createElement("div");
+
+//all my food attributes will go below
+food.id = "food";
+food.style.position = "relative";
+food.style.width = "20px";
+food.style.height = "20px";
+food.style.background = "red";
+food.style.zIndex = "-1";
+
+// gets a random multiple of 20 between 0 and max range
+// probably a more efficient way of doing this because 
+// worst case is extremely inefficient but this is my solution for now
+const getRandomNumber = (max: number, increment: number): number => {
+
+  let randomNumber = Math.floor(Math.random()* max)
+  
+  if(randomNumber % increment === 0 || randomNumber === 0){
+    return randomNumber
+  }
+  
+  return getRandomNumber(max, increment);
+}
+
+//I want food to move to a new random space if player and food are in the same place
+const moveFood = () => {
+  let foodPlacementX = getRandomNumber(680, 20);
+  let foodPlacementY = getRandomNumber(380, 20);
+
+  food.style.left = `${foodPlacementX}px`;
+  food.style.top = `${foodPlacementY}px`;
+}
+
+//food is always moved on initial load
+moveFood();
+
+//make sure the food never overlaps with the player on start
+
+//THIS CHECK WILL BE FOR FOOD PELLET MOVEMENT
+if(food.style.left === player.style.left && food.style.top === player.style.top){
+  //can forsee food being outside of game area, need another if inside that checks boundries
+  //food.style.left = `${foodPlacementX + 20}px`
+  moveFood();
+}
+//only append to the DOM once all initial attributes are set
+gameArea.appendChild(food)
 //visual output test
 let currentXPosOutput = document.querySelector<HTMLParagraphElement>('#playerX')!;
 let currentYPosOutput = document.querySelector<HTMLParagraphElement>('#playerY')!;
+//let score = document.querySelector<HTMLParagraphElement>('#score')!;
+
 currentYPosOutput.innerHTML = `current Y position: ${playerStyleTop}`;
 currentXPosOutput.innerHTML = `current X position: ${playerStyleLeft}`;
+
 
 //Interval ID to make sure only one interval is running at a time
 let intervalId: number;
 
-// TODO: 1. need to fix the container issue that I didnt have before 
-//        - WILL PROBABLY NEED ANOTHER FUNCTION TO HANDLE any GAMEOVER condition
-//       2. will need to incorporate food pellets and a score system
 // const gameOver = () => {
 
 // }
-
 // all directions need to check for both X and Y positions so no 
 const handleMoveUp = (XPosition: string | number, YPosition: string | number) => {
   
@@ -36,6 +84,7 @@ const handleMoveUp = (XPosition: string | number, YPosition: string | number) =>
   }
   return YPosition;
 }
+
 const handleMoveDown = (XPosition:string | number, YPosition: string | number) => {
   if(+YPosition >= 0 && +YPosition <= 380 && +XPosition >= 0 && +XPosition <= 680){
     YPosition = +YPosition + 20;
@@ -47,6 +96,7 @@ const handleMoveDown = (XPosition:string | number, YPosition: string | number) =
   }
   return YPosition;
 }
+
 const handleMoveLeft = (XPosition: string | number, YPosition: string | number) => {
   if(+XPosition >= 0 && +XPosition <= 680 && +YPosition >= 0 && +YPosition <= 380){
     XPosition = +XPosition - 20;
@@ -54,10 +104,11 @@ const handleMoveLeft = (XPosition: string | number, YPosition: string | number) 
   } else {
     //clean up interval 
     clearInterval(intervalId);
-    player.style.top = `${XPosition}px`;
+    player.style.left = `${XPosition}px`;
   }
   return XPosition;
 }
+
 const handleMoveRight = (XPosition: string | number, YPosition: string | number) => {
   if(+XPosition >= 0 && +XPosition <= 680 && +YPosition >= 0 && +YPosition <= 380){
     XPosition = +XPosition + 20;
@@ -65,7 +116,7 @@ const handleMoveRight = (XPosition: string | number, YPosition: string | number)
     // console.log(player.style.top)
   } else{
     clearInterval(intervalId);
-    player.style.top = `${XPosition}px`;
+    player.style.left = `${XPosition}px`;
   }
   return XPosition;
 }
@@ -103,7 +154,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
       break; 
 
     case "ArrowLeft":
-      debugger;
+      //debugger;
       clearInterval(intervalId);
       intervalId = setInterval(() => {
         currentXPos = handleMoveLeft(currentXPos, currentYPos);
@@ -113,7 +164,6 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
       break; 
 
     case "ArrowRight":
-
       clearInterval(intervalId);
       intervalId = setInterval(() => {
         currentXPos = handleMoveRight(currentXPos, currentYPos);
