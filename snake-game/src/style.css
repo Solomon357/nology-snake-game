@@ -19,6 +19,7 @@ main {
   height: 400px;
   width: 700px;
   margin-bottom: 50px;
+  position: relative;
 }
 
 .user-menu {
@@ -32,8 +33,16 @@ main {
 }
 
 .player {
-  position: relative;
+  position: absolute;
   width: 20px;
   height: 20px;
   background-color: black;
+}
+
+.food {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  z-index: -1;
 }

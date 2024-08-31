@@ -1,24 +1,19 @@
 import './style.css';
 
-// TODO: 1. WILL PROBABLY NEED ANOTHER FUNCTION TO HANDLE any GAMEOVER condition
-//       2. will need to incorporate food pellets moving on player overlap and score system 
+// TODO: 1.(WILL PROBABLY NEED ANOTHER FUNCTION TO HANDLE any GAMEOVER condition)
+//       2. refine movement so player cannot go back on themselves
+//       3. find a way to add length to the snake
+//       4. make sure food cannot spawn on any part of the snake
+//       5. if somehow the snake length is equal to grid area width*height then GAMEWIN conditoin is met
 
 const player = document.querySelector<HTMLDivElement>('#player')!;
+const food = document.querySelector<HTMLDivElement>('#food')!;
 
 //getting CSS styles 
 const playerStyleTop = getComputedStyle(player).getPropertyValue('top')
 const playerStyleLeft = getComputedStyle(player).getPropertyValue('left')
 
-const gameArea  = document.querySelector<HTMLElement>('.game-area')!;
-const food = document.createElement("div");
-
-//all my food attributes will go below
-food.id = "food";
-food.style.position = "relative";
-food.style.width = "20px";
-food.style.height = "20px";
-food.style.background = "red";
-food.style.zIndex = "-1";
+//const gameArea = document.querySelector<HTMLElement>('.game-area')!;
 
 // gets a random multiple of 20 between 0 and max range
 // probably a more efficient way of doing this because 
@@ -28,7 +23,7 @@ const getRandomNumber = (max: number, increment: number): number => {
   let randomNumber = Math.floor(Math.random()* max)
   
   if(randomNumber % increment === 0 || randomNumber === 0){
-    return randomNumber
+    return randomNumber;
   }
   
   return getRandomNumber(max, increment);
@@ -48,18 +43,13 @@ moveFood();
 
 //make sure the food never overlaps with the player on start
 
-//THIS CHECK WILL BE FOR FOOD PELLET MOVEMENT
-if(food.style.left === player.style.left && food.style.top === player.style.top){
-  //can forsee food being outside of game area, need another if inside that checks boundries
-  //food.style.left = `${foodPlacementX + 20}px`
-  moveFood();
-}
-//only append to the DOM once all initial attributes are set
-gameArea.appendChild(food)
+
 //visual output test
 let currentXPosOutput = document.querySelector<HTMLParagraphElement>('#playerX')!;
 let currentYPosOutput = document.querySelector<HTMLParagraphElement>('#playerY')!;
-//let score = document.querySelector<HTMLParagraphElement>('#score')!;
+let score = document.querySelector<HTMLParagraphElement>('#score')!;
+
+let scoreOutput: number = 0;
 
 currentYPosOutput.innerHTML = `current Y position: ${playerStyleTop}`;
 currentXPosOutput.innerHTML = `current X position: ${playerStyleLeft}`;
@@ -71,7 +61,8 @@ let intervalId: number;
 // const gameOver = () => {
 
 // }
-// all directions need to check for both X and Y positions so no 
+
+//all directions needed to check for   
 const handleMoveUp = (XPosition: string | number, YPosition: string | number) => {
   
   if(+YPosition >= 0 && +YPosition <= 380 && +XPosition >= 0 && +XPosition <= 680){
@@ -121,15 +112,29 @@ const handleMoveRight = (XPosition: string | number, YPosition: string | number)
   return XPosition;
 }
 
+const handlePlayerFoodCollision = () => {
+  //THIS CHECK WILL BE FOR FOOD PELLET MOVEMENT
+  if(food.style.left === player.style.left && food.style.top === player.style.top){
+    //can forsee food being outside of game area, need another if inside that checks boundries
+    //update score
+    scoreOutput += 20;
+    score.innerHTML = `score: ${scoreOutput}`;
+    moveFood();
+  }
+}
+
+
 const handlePlayerMovement = (e: KeyboardEvent) => {
   e.preventDefault(); // to prevent arrows scrolling the window up
-  e.stopPropagation(); //not sure if i need this just yet
+  //e.stopPropagation(); //not sure if i need this just yet
   // "player.style.${attr}" is of type "CSSInlineStyle" so in order for this to work how I expect I need the top and left attributes of player to be inline styles beforehand
   let currentYPos: string | number = player.style.top;
   let currentXPos: string | number = player.style.left;
 
   currentYPos = currentYPos.replace("px", ""); // e.g. currentYPos = "20"
   currentXPos = currentXPos.replace("px", ""); // e.g. currentXPos = "0"
+
+
 
   switch(e.key){
     case "ArrowUp":
@@ -138,6 +143,10 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
 
       intervalId = setInterval(() => {
         currentYPos = handleMoveUp(currentXPos, currentYPos);
+
+         //check for collision
+         handlePlayerFoodCollision();
+
         // show change to the user
         currentYPosOutput.innerHTML = `current Y position: ${player.style.top}`;
       }, 100);
@@ -148,16 +157,18 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
 
       intervalId = setInterval(() => {
         currentYPos = handleMoveDown(currentXPos, currentYPos);
+
+        handlePlayerFoodCollision();
         // show change to the user regardless of conditional
         currentYPosOutput.innerHTML = `current Y position: ${player.style.top}`;
       }, 100);
       break; 
 
     case "ArrowLeft":
-      //debugger;
       clearInterval(intervalId);
       intervalId = setInterval(() => {
         currentXPos = handleMoveLeft(currentXPos, currentYPos);
+        handlePlayerFoodCollision();
          //show change to the user
         currentXPosOutput.innerHTML = `current X position: ${player.style.left}`;
       }, 100);
@@ -167,6 +178,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
       clearInterval(intervalId);
       intervalId = setInterval(() => {
         currentXPos = handleMoveRight(currentXPos, currentYPos);
+        handlePlayerFoodCollision();
         // show change to the user
         currentXPosOutput.innerHTML = `current X position: ${player.style.left}`;
       }, 100);
@@ -179,3 +191,4 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
 
 
 document.addEventListener("keydown", handlePlayerMovement);
+//document.addEventListener("change", handlePlayerFoodCollision)
