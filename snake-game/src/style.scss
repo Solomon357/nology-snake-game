@@ -34,18 +34,21 @@ main {
   }
 }
 
-.player {
+.snake-body {
   position: absolute; //so we can control the left, right, top, bottom attributes to move player
   // left:20px; //for now acceptable x range is 0px to 680px
   // top: 60px; //for now acceptable y range is 0px to 380px 
   width: 20px;
   height: 20px;
   background-color: black;
+  border: 1px solid white;
 
   // &:focus{
   //   background-color: aqua;
   // }
 }
+
+
 
 .food {
   position: absolute;
