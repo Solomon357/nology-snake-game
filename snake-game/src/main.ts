@@ -14,23 +14,21 @@ const food = document.querySelector<HTMLDivElement>('#food')!;
 //const gameArea = document.querySelector<HTMLElement>('.game-area')!;
 
 const snakeNodeList = document.querySelectorAll<HTMLDivElement>(".snake-body");
-//in order to apply the methods I want to this i need to convert to a real array
-// const snakeListArr: HTMLDivElement[] = [];
+//need to convert the nodeList to an array to use real array methods
+//because you can't push to a NodeList
+const snakeNodeArr: HTMLDivElement[] = [];
+for(const elem of snakeNodeList){
+  snakeNodeArr.push(elem)
+}
 
-// for(const elem of snakeNodeList){
-//   snakeListArr.push(elem)
-// }
+console.log(snakeNodeList)
 
-// console.log(snakeListArr);
+console.log(snakeNodeArr)
 
 //so all my logic so far is logic applied to 1 element
 //so for the snake I want to apply all my changes to a snake "object?", "array?" of snake divs with every movement interval below
 // Im first going to experiment with a NodeList of player divs
 //playing around with a bunch of stuff 
-let snakeObj = [
-  {left: +player.style.left.replace("px", ""), top: +player.style.top.replace("px", "")},
-  {left: +player.style.left.replace("px", "") - 20, top: +player.style.top.replace("px", "")}
-]
 
 // gets a random multiple of 20 between 0 and max range
 // - probably a more efficient way of doing this because 
@@ -77,6 +75,7 @@ currentYPosOutput.innerHTML = `current Y position: ${playerStyleTop}`;
 currentXPosOutput.innerHTML = `current X position: ${playerStyleLeft}`;
 
 //Interval ID to make sure multiple intervals dont interfere with each other
+// I really want to try 4 intervals for 4 movements
 let movementIntervalId: number;
 
 // const gameOver = () => {
@@ -84,58 +83,138 @@ let movementIntervalId: number;
 // }
 
 //I need a way of keeping track of the last key the player pressed
-const movementStack: string[] = [];
+//I won't need a stack - should change to a variable
 
-const handleMoveUp = (XPosition: string | number, YPosition: string | number) => {
+
+const handleMoveUp = (XPosition: number, YPosition: number, currentIndex:number = 0 ) => {
   
-  if(+YPosition >= 0 && +YPosition <= 380 && +XPosition >= 0 && +XPosition <= 680){
-    //for loop kinda works, deffo need a snake object of arrays
-    YPosition = +YPosition - 20;
-    snakeNodeList[0].style.top = `${YPosition}px`;
-  // console.log(player.style.top)
-    
+  let yNewSnapshot: number;
+  let xNewSnapshot: number;
+  //need an initial snapshot of where exactly this block should move to
+  let yOldSnapShot: number = YPosition;
+  let xOldSnapShot: number = XPosition;
+
+  let newYPosition = YPosition - 20;
+
+  if(YPosition >= 0 && YPosition <= 380 && XPosition >= 0 && XPosition <= 680){
+    //I only really want to change the direction of the snake head based off a hardcoded new direction
+    snakeNodeList[currentIndex].style.top = `${newYPosition}px`;
+    snakeNodeList[currentIndex].style.left = `${XPosition}px`;
+    //we want all other blocks to copy the x and y pos of the prev block, so we need an updated snapshot here before we change it
+    for(let i = 1; i < snakeNodeList.length; i++){
+      //get current snapshot of present block
+      yNewSnapshot = +getComputedStyle(snakeNodeList[i]).getPropertyValue('top').replace("px", "");
+      xNewSnapshot = +getComputedStyle(snakeNodeList[i]).getPropertyValue('left').replace("px", "")
+      //move the current snake to the old snapshot of the previous
+      snakeNodeList[i].style.top = `${yOldSnapShot}px`;
+      snakeNodeList[i].style.left = `${xOldSnapShot}px`;
+      //update so the new snapshots are now the old snapshots for the next loop
+      xOldSnapShot = xNewSnapshot;
+      yOldSnapShot = yNewSnapshot;
+    }
   } else{
     clearInterval(movementIntervalId);
-    player.style.top = `${YPosition}px`;
-  }
-  return YPosition;
-}
-
-const handleMoveDown = (XPosition:string | number, YPosition: string | number) => {
-  if(+YPosition >= 0 && +YPosition <= 380 && +XPosition >= 0 && +XPosition <= 680){
-    YPosition = +YPosition +20;
     snakeNodeList[0].style.top = `${YPosition}px`;
-    // console.log(player.style.top)
-  } else{
-    
-    clearInterval(movementIntervalId);
-    player.style.top = `${YPosition}px`;
   }
-  return YPosition;
+  return newYPosition;
 }
 
-const handleMoveLeft = (XPosition: string | number, YPosition: string | number) => {
-  if(+XPosition >= 0 && +XPosition <= 680 && +YPosition >= 0 && +YPosition <= 380){
-    XPosition = +XPosition - 20;
-    snakeNodeList[0].style.left = `${XPosition}px`;
+
+const handleMoveDown = (XPosition: number, YPosition: number, currentIndex: number = 0) => {
+  
+  let yNewSnapshot: number;
+  let xNewSnapshot: number;
+  //need an initial snapshot of where exactly this block should move to
+  let yOldSnapShot: number = YPosition;
+  let xOldSnapShot: number = XPosition;
+
+  let newYPosition: number = YPosition + 20;
+
+  if(YPosition >= 0 && YPosition <= 380 && XPosition >= 0 && XPosition <= 680){
+    snakeNodeList[currentIndex].style.top = `${newYPosition}px`;
+    snakeNodeList[currentIndex].style.left = `${XPosition}px`;
+
+    //we want all other blocks to copy the x and y pos of the prev block, so we need an updated snapshot here before we change it
+    for(let i = 1; i < snakeNodeList.length; i++){
+      //get current snapshot of present block
+      yNewSnapshot = +getComputedStyle(snakeNodeList[i]).getPropertyValue('top').replace("px", "");
+      xNewSnapshot = +getComputedStyle(snakeNodeList[i]).getPropertyValue('left').replace("px", "")
+      //move the current snake to the old snapshot of the previous
+      snakeNodeList[i].style.top = `${yOldSnapShot}px`;
+      snakeNodeList[i].style.left = `${xOldSnapShot}px`;
+      //update snapshots so the new snapshots are now the old snapshots for the next loop
+      xOldSnapShot = xNewSnapshot;
+      yOldSnapShot = yNewSnapshot;
+    }
+
+  } else{
+    clearInterval(movementIntervalId);
+    snakeNodeList[0].style.top = `${YPosition}px`;
+  }
+  return newYPosition;
+}
+
+const handleMoveLeft = (XPosition: number, YPosition: number, currentIndex: number = 0) => {
+  let xNewSnapshot: number;
+  let yNewSnapshot: number;
+  //need an initial snapshot of where exactly this block should move to
+  let xOldSnapShot: number = XPosition;
+  let yOldSnapShot: number = YPosition;
+
+  let newXPosition = XPosition - 20;
+
+  if(XPosition >= 0 && XPosition <= 680 && YPosition >= 0 && YPosition <= 380){
+    snakeNodeList[currentIndex].style.top = `${YPosition}px`;
+    snakeNodeList[currentIndex].style.left = `${newXPosition}px`;
+    //we want all other blocks to copy the x and y pos of the prev block, so we need an updated snapshot here before we change it
+    for(let i = 1; i < snakeNodeList.length; i++){
+      //get current snapshot of present block
+      yNewSnapshot = +getComputedStyle(snakeNodeList[i]).getPropertyValue('top').replace("px", "");
+      xNewSnapshot = +getComputedStyle(snakeNodeList[i]).getPropertyValue('left').replace("px", "")
+      //move the current snake to the old snapshot of the previous
+      snakeNodeList[i].style.top = `${yOldSnapShot}px`;
+      snakeNodeList[i].style.left = `${xOldSnapShot}px`;
+      //update snapshots so the new snapshots are now the old snapshots for the next loop
+      xOldSnapShot = xNewSnapshot;
+      yOldSnapShot = yNewSnapshot;
+    }
   } else {
     //clean up interval 
     clearInterval(movementIntervalId);
-    player.style.left = `${XPosition}px`;
+    snakeNodeList[0].style.left = `${XPosition}px`;
   }
-  return XPosition;
+  return newXPosition;
 }
 
-const handleMoveRight = (XPosition: string | number, YPosition: string | number) => {
-  if(+XPosition >= 0 && +XPosition <= 680 && +YPosition >= 0 && +YPosition <= 380){
-      XPosition = +XPosition + 20;
-      snakeNodeList[0].style.left = `${XPosition}px`;
-    // console.log(player.style.top)
+const handleMoveRight = (XPosition: number, YPosition: number, currentIndex: number = 0) => {
+  let xNewSnapshot: number;
+  let yNewSnapshot: number;
+  //need an initial snapshot of where exactly this block should move to
+  let xOldSnapShot: number = XPosition;
+  let yOldSnapShot: number = YPosition;
+
+  let newXPosition = XPosition + 20;
+  if(XPosition >= 0 && XPosition <= 680 && YPosition >= 0 && YPosition <= 380){
+
+    snakeNodeList[currentIndex].style.top = `${YPosition}px`;
+    snakeNodeList[currentIndex].style.left = `${newXPosition}px`;
+    //we want all other blocks to copy the x and y pos of the prev block, so we need an updated snapshot here before we change it
+    for(let i = 1; i < snakeNodeList.length; i++){
+      //get current snapshot of present block
+      yNewSnapshot = +getComputedStyle(snakeNodeList[i]).getPropertyValue('top').replace("px", "");
+      xNewSnapshot = +getComputedStyle(snakeNodeList[i]).getPropertyValue('left').replace("px", "")
+      //move the current snake to the old snapshot of the previous
+      snakeNodeList[i].style.top = `${yOldSnapShot}px`;
+      snakeNodeList[i].style.left = `${xOldSnapShot}px`;
+      //update snapshots so the new snapshots are now the old snapshots for the next loop
+      xOldSnapShot = xNewSnapshot;
+      yOldSnapShot = yNewSnapshot;
+    }
   } else{
     clearInterval(movementIntervalId);
-    player.style.left = `${XPosition}px`;
+    snakeNodeList[0].style.left = `${XPosition}px`;
   }
-  return XPosition;
+  return newXPosition;
 }
 
 const handlePlayerFoodCollision = () => {
@@ -149,6 +228,8 @@ const handlePlayerFoodCollision = () => {
   }
 }
 
+const movementStack: string[] = [];
+
 const handlePlayerMovement = (e: KeyboardEvent) => {
   e.preventDefault(); // to prevent arrows scrolling the window up
   //e.stopPropagation(); //not sure if i need this just yet
@@ -159,10 +240,10 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
 
   currentYPos = currentYPos.replace("px", ""); // e.g. currentYPos = "20"
   currentXPos = currentXPos.replace("px", ""); // e.g. currentXPos = "0"
+
   switch(e.key){
     case "w":
     case "ArrowUp":
-
       //if the last key I pressed is in the opposite direction of what im trying to do now
       if(lastMove === "ArrowDown" || lastMove === "s"){
         //pushing lastMove back onto the stack in this case to make sure the last move is always the same until 
@@ -173,17 +254,24 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
         //push movement to my movement stack
         movementStack.push(e.key)
         console.log(movementStack)
-        // ALWAYS make sure the last interval is cleared before setting a new one 
+        // ALWAYS make sure the last interval is cleared before setting a new one
         clearInterval(movementIntervalId);
+
+        //i think I should wrap this whole movement thing in a for loop that 
+        //goes through the snake segments
+        // because the snakeArr element list is globally accessed
+        //I can then manipulate each snake block how i want every interval
+        //the only thing im not sure about atm is where this for loop should be placed
+        
         // different game modes will have different intervals with if statements
         movementIntervalId = setInterval(() => {
-          currentYPos = handleMoveUp(currentXPos, currentYPos);
+          //debugger;
+          currentYPos = handleMoveUp(+currentXPos, +currentYPos);
           //playerFoodCollision should always be checked once the player moves
           handlePlayerFoodCollision();
           //showing change to the user
           currentYPosOutput.innerHTML = `current Y position: ${snakeNodeList[0].style.top}`;
         }, 100);
-
         break;
       }
 
@@ -202,7 +290,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
         clearInterval(movementIntervalId);
         // different game modes will have different intervals with if statements
         movementIntervalId = setInterval(() => {
-          currentYPos = handleMoveDown(currentXPos, currentYPos);
+          currentYPos = handleMoveDown(+currentXPos, +currentYPos);
           //playerFoodCollision should always be checked once the player moves
           handlePlayerFoodCollision();
           //showing change to the user
@@ -223,7 +311,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
         console.log(movementStack)
         clearInterval(movementIntervalId);
         movementIntervalId = setInterval(() => {
-          currentXPos = handleMoveLeft(currentXPos, currentYPos);
+          currentXPos = handleMoveLeft(+currentXPos, +currentYPos);
           handlePlayerFoodCollision();
           //showing change to the user
           currentXPosOutput.innerHTML = `current X position: ${snakeNodeList[0].style.left}`;
@@ -243,7 +331,8 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
 
         clearInterval(movementIntervalId);
         movementIntervalId = setInterval(() => {
-          currentXPos = handleMoveRight(currentXPos, currentYPos);
+          //debugger;
+          currentXPos = handleMoveRight(+currentXPos, +currentYPos);
           handlePlayerFoodCollision();
           //showing change to the user
           currentXPosOutput.innerHTML = `current X position: ${snakeNodeList[0].style.left}`;
