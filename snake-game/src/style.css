@@ -32,11 +32,12 @@ main {
   text-align: left;
 }
 
-.player {
+.snake-body {
   position: absolute;
   width: 20px;
   height: 20px;
   background-color: black;
+  border: 1px solid white;
 }
 
 .food {

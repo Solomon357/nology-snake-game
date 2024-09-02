@@ -1,7 +1,7 @@
 import './style.css';
 // TODO: 1.(WILL PROBABLY NEED ANOTHER FUNCTION TO HANDLE any GAMEOVER condition)
-//       2. refine movement so player cannot go back on themselves
-//       3. find a way to add length to the snake
+//       2. find a way to add length to the snake
+//       3. further refine movement so user input is very responsive
 //       4. make sure food cannot spawn on any part of the snake
 //       5. if somehow the snake length is equal to grid area width*height then GAMEWIN conditoin is met
 
@@ -12,6 +12,25 @@ import './style.css';
 const player = document.querySelector<HTMLDivElement>('#player')!;
 const food = document.querySelector<HTMLDivElement>('#food')!;
 //const gameArea = document.querySelector<HTMLElement>('.game-area')!;
+
+const snakeNodeList = document.querySelectorAll<HTMLDivElement>(".snake-body");
+//in order to apply the methods I want to this i need to convert to a real array
+// const snakeListArr: HTMLDivElement[] = [];
+
+// for(const elem of snakeNodeList){
+//   snakeListArr.push(elem)
+// }
+
+// console.log(snakeListArr);
+
+//so all my logic so far is logic applied to 1 element
+//so for the snake I want to apply all my changes to a snake "object?", "array?" of snake divs with every movement interval below
+// Im first going to experiment with a NodeList of player divs
+//playing around with a bunch of stuff 
+let snakeObj = [
+  {left: +player.style.left.replace("px", ""), top: +player.style.top.replace("px", "")},
+  {left: +player.style.left.replace("px", "") - 20, top: +player.style.top.replace("px", "")}
+]
 
 // gets a random multiple of 20 between 0 and max range
 // - probably a more efficient way of doing this because 
@@ -58,7 +77,7 @@ currentYPosOutput.innerHTML = `current Y position: ${playerStyleTop}`;
 currentXPosOutput.innerHTML = `current X position: ${playerStyleLeft}`;
 
 //Interval ID to make sure multiple intervals dont interfere with each other
-let moveIntervalId: number;
+let movementIntervalId: number;
 
 // const gameOver = () => {
 
@@ -70,11 +89,13 @@ const movementStack: string[] = [];
 const handleMoveUp = (XPosition: string | number, YPosition: string | number) => {
   
   if(+YPosition >= 0 && +YPosition <= 380 && +XPosition >= 0 && +XPosition <= 680){
+    //for loop kinda works, deffo need a snake object of arrays
     YPosition = +YPosition - 20;
-    player.style.top = `${YPosition}px`;
-    // console.log(player.style.top)
+    snakeNodeList[0].style.top = `${YPosition}px`;
+  // console.log(player.style.top)
+    
   } else{
-    clearInterval(moveIntervalId);
+    clearInterval(movementIntervalId);
     player.style.top = `${YPosition}px`;
   }
   return YPosition;
@@ -82,11 +103,12 @@ const handleMoveUp = (XPosition: string | number, YPosition: string | number) =>
 
 const handleMoveDown = (XPosition:string | number, YPosition: string | number) => {
   if(+YPosition >= 0 && +YPosition <= 380 && +XPosition >= 0 && +XPosition <= 680){
-    YPosition = +YPosition + 20;
-    player.style.top = `${YPosition}px`;
+    YPosition = +YPosition +20;
+    snakeNodeList[0].style.top = `${YPosition}px`;
+    // console.log(player.style.top)
   } else{
     
-    clearInterval(moveIntervalId);
+    clearInterval(movementIntervalId);
     player.style.top = `${YPosition}px`;
   }
   return YPosition;
@@ -95,10 +117,10 @@ const handleMoveDown = (XPosition:string | number, YPosition: string | number) =
 const handleMoveLeft = (XPosition: string | number, YPosition: string | number) => {
   if(+XPosition >= 0 && +XPosition <= 680 && +YPosition >= 0 && +YPosition <= 380){
     XPosition = +XPosition - 20;
-    player.style.left = `${XPosition}px`;
+    snakeNodeList[0].style.left = `${XPosition}px`;
   } else {
     //clean up interval 
-    clearInterval(moveIntervalId);
+    clearInterval(movementIntervalId);
     player.style.left = `${XPosition}px`;
   }
   return XPosition;
@@ -106,11 +128,11 @@ const handleMoveLeft = (XPosition: string | number, YPosition: string | number) 
 
 const handleMoveRight = (XPosition: string | number, YPosition: string | number) => {
   if(+XPosition >= 0 && +XPosition <= 680 && +YPosition >= 0 && +YPosition <= 380){
-    XPosition = +XPosition + 20;
-    player.style.left = `${XPosition}px`;
+      XPosition = +XPosition + 20;
+      snakeNodeList[0].style.left = `${XPosition}px`;
     // console.log(player.style.top)
   } else{
-    clearInterval(moveIntervalId);
+    clearInterval(movementIntervalId);
     player.style.left = `${XPosition}px`;
   }
   return XPosition;
@@ -131,8 +153,8 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
   e.preventDefault(); // to prevent arrows scrolling the window up
   //e.stopPropagation(); //not sure if i need this just yet
   // "player.style.${attr}" is of type "CSSInlineStyle" so in order for this to work how I expect I need the top and left attributes of player to be inline styles beforehand
-  let currentYPos: string | number = player.style.top;
-  let currentXPos: string | number = player.style.left;
+  let currentYPos: string | number = snakeNodeList[0].style.top;
+  let currentXPos: string | number = snakeNodeList[0].style.left;
   let lastMove = movementStack.pop();
 
   currentYPos = currentYPos.replace("px", ""); // e.g. currentYPos = "20"
@@ -152,14 +174,14 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
         movementStack.push(e.key)
         console.log(movementStack)
         // ALWAYS make sure the last interval is cleared before setting a new one 
-        clearInterval(moveIntervalId);
+        clearInterval(movementIntervalId);
         // different game modes will have different intervals with if statements
-        moveIntervalId = setInterval(() => {
+        movementIntervalId = setInterval(() => {
           currentYPos = handleMoveUp(currentXPos, currentYPos);
           //playerFoodCollision should always be checked once the player moves
           handlePlayerFoodCollision();
           //showing change to the user
-          currentYPosOutput.innerHTML = `current Y position: ${player.style.top}`;
+          currentYPosOutput.innerHTML = `current Y position: ${snakeNodeList[0].style.top}`;
         }, 100);
 
         break;
@@ -177,21 +199,21 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
         movementStack.push(e.key)
         console.log(movementStack)
         // ALWAYS make sure the last interval is cleared before setting a new one 
-        clearInterval(moveIntervalId);
+        clearInterval(movementIntervalId);
         // different game modes will have different intervals with if statements
-        moveIntervalId = setInterval(() => {
+        movementIntervalId = setInterval(() => {
           currentYPos = handleMoveDown(currentXPos, currentYPos);
           //playerFoodCollision should always be checked once the player moves
           handlePlayerFoodCollision();
           //showing change to the user
-          currentYPosOutput.innerHTML = `current Y position: ${player.style.top}`;
+          currentYPosOutput.innerHTML = `current Y position: ${snakeNodeList[0].style.top}`;
         }, 100);
         break;
       }
 
     case "a":
     case "ArrowLeft":
-      if(lastMove === "ArrowRight" || lastMove === "a"){
+      if(lastMove === "ArrowRight" || lastMove === "d"){
         movementStack.push(lastMove)
         console.log("cant move there mate")
         break;
@@ -199,18 +221,18 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
         //push movement to my movement stack
         movementStack.push(e.key)
         console.log(movementStack)
-        clearInterval(moveIntervalId);
-        moveIntervalId = setInterval(() => {
+        clearInterval(movementIntervalId);
+        movementIntervalId = setInterval(() => {
           currentXPos = handleMoveLeft(currentXPos, currentYPos);
           handlePlayerFoodCollision();
           //showing change to the user
-          currentXPosOutput.innerHTML = `current X position: ${player.style.left}`;
+          currentXPosOutput.innerHTML = `current X position: ${snakeNodeList[0].style.left}`;
         }, 100);
         break; 
       }
     case "d":
     case "ArrowRight":
-      if(lastMove === "ArrowLeft" || lastMove === "d"){
+      if(lastMove === "ArrowLeft" || lastMove === "a"){
         movementStack.push(lastMove)
         console.log("cant move there mate")
         break;
@@ -218,13 +240,13 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
         //push movement to my movement stack
         movementStack.push(e.key)
         console.log(movementStack)
-        
-        clearInterval(moveIntervalId);
-        moveIntervalId = setInterval(() => {
+
+        clearInterval(movementIntervalId);
+        movementIntervalId = setInterval(() => {
           currentXPos = handleMoveRight(currentXPos, currentYPos);
           handlePlayerFoodCollision();
           //showing change to the user
-          currentXPosOutput.innerHTML = `current X position: ${player.style.left}`;
+          currentXPosOutput.innerHTML = `current X position: ${snakeNodeList[0].style.left}`;
       }, 100);
       break;
       }
