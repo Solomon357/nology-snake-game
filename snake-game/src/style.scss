@@ -1,9 +1,16 @@
+@font-face {
+  font-family: "Press Start 2P";
+  src: url('./fonts/press-start-2p-font/PressStart2P-vaV7.ttf');
+}
+
 body {
     margin: 0;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
+    background-color: darkseagreen;
+    font-family: "Press Start 2P", sans-serif;
   }
   
 main {
@@ -13,24 +20,32 @@ main {
   justify-content: center;
   align-items: center;
 }
+.desc-container {
+  width: 700px;
+
+  &__user-menu {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+}
 
 .game-area {
-  border: 5px solid aqua;
+  border: 20px solid rgb(194, 236, 130);
+  border-radius: 10px;
   height: 400px;
   width: 700px;
   margin-bottom: 50px;
   position: relative;
 }
 
-.user-menu {
-  margin-bottom: 20px;
-  display: flex;
-  gap: 8px;
+#score {
+  text-align: left;
+}
 
-  label{
-    display: block;
-    text-align: left;
-  }
+#player {
+  background-color: black;
 }
 .snake-body {
   position: absolute; //so we can control the left, right, top, bottom attributes to move player
@@ -46,6 +61,6 @@ main {
   position: absolute;
   width: 20px;
   height: 20px;
-  background-color: red;
+  background-color: antiquewhite;
   z-index: -1;
 }

@@ -3,10 +3,12 @@ import './style.css';
 //       1. styling + music
 //       2. implement highScore
 
-// QUALITY OF LIFE THINGS TO DEAL WITH after:
-//  fix bug where player can pause when player holds key down
-//  further refine movement so user input is very responsive
-//  if somehow the snake length is equal to grid area width*height then GAMEWIN conditin is met
+//  QUALITY OF LIFE THINGS TO DEAL WITH after deadline:
+//  - fix bug where player can pause when player holds key down
+//  - further refine movement so user input is very responsive
+//  - create game modes that work
+//  - be able to change theme
+//  - if somehow the snake length is equal to grid area width*height then GAMEWIN condition is met
 
 
 const player = document.querySelector<HTMLDivElement>('#player')!;
@@ -73,10 +75,12 @@ let movementIntervalId: number; //Interval ID is needed to make sure multiple in
 const handleGameOver = (typeOfLoss: string, isGrowSnake: boolean) => {
   if(typeOfLoss === "OutOfBounds"){
     document.removeEventListener('keydown', handlePlayerMovement)
+    player.style.background = "grey";
     //then trigger a pop up saying game over
     alert("Out of Bounds! Press the 'r' key to restart!")
     //if grow snake is not the reason for selfCollision then I really ran into myself, so run the code below
   } else if (typeOfLoss === "SelfCollision" && !isGrowSnake){
+    player.style.background = "grey";
     document.removeEventListener('keydown', handlePlayerMovement)
     alert("You ran into yourself:( Press the 'r' key to restart!")
   }
