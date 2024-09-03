@@ -8,41 +8,29 @@
     <script type="module" src="/src/main.ts"></script>
   </head>
   <body>
-
     <header>
       <h1>Snaaaaake!</h1>
-
       <section class="desc-container">
-        <h2>Welcome to Snake</h2>
-        <p>press the arrow key in any direction to start!</p>
-  
+        <h2>press the arrow keys or WASD in any direction to start!</h2>
         <div class="user-menu">
           <button id="changeTheme">Change Theme</button>
-          <div class="user-menu__control-option">
+          <!-- <div class="user-menu__control-option">
             <label for="changeControls">Controls</label>
             <select id="changeControls">
               <option value="control-1">Arrow keys</option>
               <option value="control-2">WASD</option>
             </select>
-
-          </div>
+          </div> -->
           <button id="mode">Mode</button>
         </div>
-
-        <p id="playerX">current X position: 20px</p>
-        <p id="playerY">current Y position: 60px</p>
-        <br />
         <p id="score">score: 0 </p>
       </section>
     </header>
 
     <main>
       <section class="game-area">
-
         <div class="snake-body" id="player" tabindex="-1" style="left: 100px; top: 60px; background-color: blue;"></div>
-       
         <div class="food" id="food" tabindex="-1"></div>
-
       </section>
     </main>
 
