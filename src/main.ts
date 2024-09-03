@@ -24,7 +24,7 @@ const snakeNodeList = document.querySelectorAll<HTMLDivElement>(".snake-body");
 
 //play the background music immediately
 audio.volume = 0.05;
-audio.currentTime = 18;
+audio.currentTime = 2;
 audio.play();
 //need to convert the nodeList to an array to use real array methods
 //because you can't use array.push in a NodeList
