@@ -1,12 +1,13 @@
 import './style.css';
 // TODO:
-//       1. implement highScore
+//       1. refine player movement so its as responsive as can be 
+//       2. implement highScore
+//       3. change hardcoded values for game-area container
 
 //  QUALITY OF LIFE THINGS TO DEAL WITH after deadline:
 //  - sort out background music
 //  - fix bug where player can pause when player holds key down
 //  - further refine movement so user input is very responsive, and can't double back on themselves
-//  - create game modes that work. easy: interval = 100, medium: interval = 70, hard: interval = 50, impossible: interval = 20
 //  - be able to change theme
 //  - if somehow the snake length is equal to grid area width*height then GAMEWIN condition is met
 
@@ -15,7 +16,9 @@ const player = document.querySelector<HTMLDivElement>('#player')!;
 const food = document.querySelector<HTMLDivElement>('#food')!;
 const gameOverScreen = document.querySelector<HTMLDivElement>('#gameOverScreen')!;
 const OutofBoundsScreen = document.querySelector<HTMLDivElement>('#OutOfBoundsScreen')!;
+const options = document.querySelector<HTMLSelectElement>('#changeMode')!;
 const gameArea = document.querySelector<HTMLElement>('.game-area')!;
+
 const snakeNodeList = document.querySelectorAll<HTMLDivElement>(".snake-body");
 
 //need to convert the nodeList to an array to use real array methods
@@ -43,8 +46,7 @@ let scoreOutput: number = 0;
 let isGrowSnake: boolean = false;
 let lastMove: string = "";
 let movementIntervalId: number; //Interval ID is needed to make sure multiple intervals dont interfere with each other
-//let gameMode = {easy: 100, medium: 70, hard: 50, impossible: 20}
-
+let gameMode: number = 100; // default speed is easy
 
 // ALL FUNCTIONS 
 
@@ -75,6 +77,11 @@ const moveFood = () => {
     }
   }
   //if we make it this far then food is where it should be so do nothing
+}
+
+const onModeChange = () => {
+  gameMode = +options.value;
+  console.log(gameMode)
 }
 
 const handleGameOver = (typeOfLoss: string, isGrowSnake: boolean): void => {
@@ -257,6 +264,8 @@ const handleSelfCollision = (arr: HTMLDivElement[]) => {
   isGrowSnake = false;
 }
 
+
+options.onchange = onModeChange; //handle the options change for game mode
 moveFood(); //food is always moved on initial load
 
 //will implement this after deadline for refined movement
@@ -291,7 +300,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
           //all collisions should always be checked once the player has finished moving
           handlePlayerFoodCollision();
           handleSelfCollision(snakeNodeArr)
-        }, 100);
+        }, gameMode);
         break;
       }
 
@@ -308,7 +317,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
           currentYPos = handleMoveDown(+currentXPos, +currentYPos);
           handlePlayerFoodCollision();
           handleSelfCollision(snakeNodeArr)
-        }, 100);
+        }, gameMode);
         break;
       }
 
@@ -325,7 +334,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
           currentXPos = handleMoveLeft(+currentXPos, +currentYPos);
           handlePlayerFoodCollision();
           handleSelfCollision(snakeNodeArr);
-        }, 100);
+        }, gameMode);
         break; 
       }
 
@@ -342,7 +351,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
           currentXPos = handleMoveRight(+currentXPos, +currentYPos);
           handlePlayerFoodCollision();
           handleSelfCollision(snakeNodeArr);
-      }, 100);
+      }, gameMode);
       break;
       }
 

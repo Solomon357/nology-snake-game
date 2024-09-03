@@ -23,6 +23,9 @@ main {
 .desc-container {
   width: 700px;
 }
+.desc-container__mode-options {
+  margin-top: 10px;
+}
 .desc-container__user-menu {
   margin-bottom: 20px;
   display: flex;
@@ -45,6 +48,7 @@ main {
 
 #player {
   background-color: black;
+  z-index: 900;
 }
 
 .snake-body {
@@ -53,6 +57,7 @@ main {
   height: 20px;
   background-color: black;
   border: 1px solid white;
+  z-index: 500;
 }
 
 .food {
