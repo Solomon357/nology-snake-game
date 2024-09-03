@@ -1,17 +1,49 @@
-/* Error: expected "}".
- *    ,
- * 62 | }
- *    |  ^
- *    '
- *   style.scss 62:2  root stylesheet */
+body {
+  margin: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-body::before {
-  font-family: "Source Code Pro", "SF Mono", Monaco, Inconsolata, "Fira Mono",
-      "Droid Sans Mono", monospace, monospace;
-  white-space: pre;
+main {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-area {
+  border: 5px solid aqua;
+  height: 400px;
+  width: 700px;
+  margin-bottom: 50px;
+  position: relative;
+}
+
+.user-menu {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 8px;
+}
+.user-menu label {
   display: block;
-  padding: 1em;
-  margin-bottom: 1em;
-  border-bottom: 2px solid black;
-  content: 'Error: expected "}".\a    \2577 \a 62 \2502  }\a    \2502   ^\a    \2575 \a   style.scss 62:2  root stylesheet';
+  text-align: left;
+}
+
+.snake-body {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: black;
+  border: 1px solid white;
+}
+
+.food {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  z-index: -1;
 }
