@@ -5,8 +5,8 @@ import './style.css';
 //  QUALITY OF LIFE THINGS TO DEAL WITH after deadline:
 //  - sort out background music
 //  - fix bug where player can pause when player holds key down
-//  - further refine movement so user input is very responsive
-//  - create game modes that work, easy: interval = 100, medium: interval = 70, hard: interval = 50, impossible: interval = 20
+//  - further refine movement so user input is very responsive, and can't double back on themselves
+//  - create game modes that work. easy: interval = 100, medium: interval = 70, hard: interval = 50, impossible: interval = 20
 //  - be able to change theme
 //  - if somehow the snake length is equal to grid area width*height then GAMEWIN condition is met
 
@@ -264,6 +264,7 @@ moveFood(); //food is always moved on initial load
 
 const handlePlayerMovement = (e: KeyboardEvent) => {
   e.preventDefault(); // to prevent arrows scrolling the window up
+  
   //"player.style.${attr}" is of type "CSSInlineStyle" so in order for this to work how I 
   //expect I need the top and left attributes of player to be inline styles beforehand
   let currentYPos: string | number = snakeNodeArr[0].style.top; // e.g. "20px"
