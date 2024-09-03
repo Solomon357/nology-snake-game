@@ -21,16 +21,21 @@ main {
   align-items: center;
 }
 
-.desc-container {
-  width: 700px;
+// .desc-container {
+//   width: 700px;
 
-  &__user-menu {
-    margin-bottom: 20px;
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-  }
-}
+//   &__mode-options {
+//     margin-top: 10px;
+//   }
+
+//   &__user-menu {
+//     margin-bottom: 20px;
+//     display: flex;
+//     gap: 8px;
+//     justify-content: center;
+//   }
+// }
+
 
 .game-area {
   border: 20px solid rgb(194, 236, 130);
@@ -43,18 +48,13 @@ main {
 
 .score {
   text-align: left;
-  // &__number{
-  //   color: darkseagreen;
-  // }
 }
 
 #player {
   background-color: black;
 }
 .snake-body {
-  position: absolute; //so we can control the left, right, top, bottom attributes to move player
-  // left:20px; //for now acceptable x range is 0px to 680px
-  // top: 60px; //for now acceptable y range is 0px to 380px 
+  position: absolute; //so we can control the left, right, top, bottom attributes to move player 
   width: 20px;
   height: 20px;
   background-color: black;

@@ -1,12 +1,12 @@
 import './style.css';
 // TODO:
-//       1. styling + music
-//       2. implement highScore
+//       1. implement highScore
 
 //  QUALITY OF LIFE THINGS TO DEAL WITH after deadline:
+//  - sort out background music
 //  - fix bug where player can pause when player holds key down
 //  - further refine movement so user input is very responsive
-//  - create game modes that work
+//  - create game modes that work, easy: interval = 100, medium: interval = 70, hard: interval = 50, impossible: interval = 20
 //  - be able to change theme
 //  - if somehow the snake length is equal to grid area width*height then GAMEWIN condition is met
 
@@ -24,10 +24,11 @@ const snakeNodeArr: HTMLDivElement[] = [];
 for(const elem of snakeNodeList){
   snakeNodeArr.push(elem)
 }
-//console.log(snakeNodeList)
-//console.log(snakeNodeArr)
+//console.log(snakeNodeList) //test
+//console.log(snakeNodeArr) //test
 
-//visual output tests
+//visual snake head position tracking in DOM
+
 // let currentXPosOutput = document.querySelector<HTMLParagraphElement>('#playerX')!;
 // let currentYPosOutput = document.querySelector<HTMLParagraphElement>('#playerY')!;
 // const playerStyleTop = getComputedStyle(player).getPropertyValue('top')
@@ -35,16 +36,20 @@ for(const elem of snakeNodeList){
 // currentYPosOutput.innerHTML = `current Y position: ${playerStyleTop}`;
 // currentXPosOutput.innerHTML = `current X position: ${playerStyleLeft}`;
 
+
 // ALL GLOBAL VARIABLES
 let score = document.querySelector<HTMLParagraphElement>('#score')!;
 let scoreOutput: number = 0;
 let isGrowSnake: boolean = false;
+let lastMove: string = "";
 let movementIntervalId: number; //Interval ID is needed to make sure multiple intervals dont interfere with each other
+//let gameMode = {easy: 100, medium: 70, hard: 50, impossible: 20}
+
 
 // ALL FUNCTIONS 
 
 // gets a random multiple of 20 between 0 and max range
-// * probably a more efficient way of doing this because 
+// ** probably a more efficient way of doing this because 
 //   worst case is extremely inefficient but this is my solution for now
 const getRandomNumber = (max: number, increment: number): number => {
   let randomNumber = Math.floor(Math.random()* max)
@@ -65,7 +70,7 @@ const moveFood = () => {
   //going through all current snake segments and checking their positions
   for(const snakeSegment of snakeNodeArr){
     if(food.style.left === snakeSegment.style.left && food.style.top === snakeSegment.style.top){
-      //**between this recursive call and getRandomNumber the potential for game speed loss is very high */
+      //**between this recursive call and getRandomNumber the potential for game speed loss is probably very high */
       return moveFood();
     }
   }
@@ -78,24 +83,23 @@ const handleGameOver = (typeOfLoss: string, isGrowSnake: boolean): void => {
     player.style.background = "grey";
     //then trigger a pop up saying game over
     OutofBoundsScreen.style.display = "block";
-    //if grow snake is not the reason for selfCollision then I really ran into myself, so run the code below
+    //if grow snake is NOT the reason for selfCollision then I really ran into myself, so run the code below
   } else if(typeOfLoss === "SelfCollision" && !isGrowSnake){
     document.removeEventListener('keydown', handlePlayerMovement)
     gameOverScreen.style.display = "block";
     player.style.background = "grey";
   }
-
   //if im here that means growSnake() was the reason this function fired, so false alarm do nothing
 }
 
-//ALL THE MOVE FUNCTIONS WITH THE EXCEPTION OF PLAYERMOVE ARE THE EXACT SAME LOGIC 
+//ALL THE MOVE FUNCTIONS WITH THE EXCEPTION OF PLAYERMOVE ARE THE EXACT SAME LOGIC + change player head position
 
 const handleMoveUp = (XPosition: number, YPosition: number, currentIndex:number = 0 ) => {
   //debugger;
   //need an initial snapshot of where exactly this block should move to
   let yOldSnapShot: number = YPosition;
   let xOldSnapShot: number = XPosition;
-  //need a new snapshot as soon as we access the next block so the next block now where to move to
+  //need a new snapshot as soon as we access the next block so the next block knows where to move
   let yNewSnapshot: number;
   let xNewSnapshot: number;
 
@@ -254,17 +258,16 @@ const handleSelfCollision = (arr: HTMLDivElement[]) => {
 }
 
 moveFood(); //food is always moved on initial load
-let lastMove: string = "";
+
 //will implement this after deadline for refined movement
 //let movementQueue: string[] = [];
 
 const handlePlayerMovement = (e: KeyboardEvent) => {
   e.preventDefault(); // to prevent arrows scrolling the window up
-  //e.stopPropagation();
   //"player.style.${attr}" is of type "CSSInlineStyle" so in order for this to work how I 
   //expect I need the top and left attributes of player to be inline styles beforehand
-  let currentYPos: string | number = snakeNodeArr[0].style.top;
-  let currentXPos: string | number = snakeNodeArr[0].style.left;
+  let currentYPos: string | number = snakeNodeArr[0].style.top; // e.g. "20px"
+  let currentXPos: string | number = snakeNodeArr[0].style.left; // e.g. "0px"
 
   currentYPos = currentYPos.replace("px", ""); // e.g. currentYPos = "20"
   currentXPos = currentXPos.replace("px", ""); // e.g. currentXPos = "0"
@@ -282,7 +285,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
         // console.log(lastMove) // test
         // ALWAYS make sure the last interval is cleared before setting a new one
         clearInterval(movementIntervalId);
-        movementIntervalId = setInterval(() => { //setInterval is how i can get multiple movements with one keypress
+        movementIntervalId = setInterval(() => { //setInterval is how I can get multiple movements with one keypress
           currentYPos = handleMoveUp(+currentXPos, +currentYPos);
           //all collisions should always be checked once the player has finished moving
           handlePlayerFoodCollision();
@@ -347,12 +350,10 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
   }
 }
 
-
-
 document.addEventListener("keydown", handlePlayerMovement);
 //just to reload the page with the r key at any time
 document.addEventListener("keydown", ((e:KeyboardEvent) => {
   if(e.key === "r"){
-    location.reload()
+    location.reload();
   }
 }))
