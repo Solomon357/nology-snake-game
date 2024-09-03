@@ -10,7 +10,7 @@ import './style.css';
 //  - be able to change theme
 //  - if somehow the snake length is equal to grid area width*height then GAMEWIN condition is met
 
-
+//access to HTML elements
 const player = document.querySelector<HTMLDivElement>('#player')!;
 const food = document.querySelector<HTMLDivElement>('#food')!;
 const gameOverScreen = document.querySelector<HTMLDivElement>('#gameOverScreen')!;
@@ -27,19 +27,34 @@ for(const elem of snakeNodeList){
 //console.log(snakeNodeList)
 //console.log(snakeNodeArr)
 
+//visual output tests
+// let currentXPosOutput = document.querySelector<HTMLParagraphElement>('#playerX')!;
+// let currentYPosOutput = document.querySelector<HTMLParagraphElement>('#playerY')!;
+// const playerStyleTop = getComputedStyle(player).getPropertyValue('top')
+// const playerStyleLeft = getComputedStyle(player).getPropertyValue('left')
+// currentYPosOutput.innerHTML = `current Y position: ${playerStyleTop}`;
+// currentXPosOutput.innerHTML = `current X position: ${playerStyleLeft}`;
+
+// ALL GLOBAL VARIABLES
+let score = document.querySelector<HTMLParagraphElement>('#score')!;
+let scoreOutput: number = 0;
+let isGrowSnake: boolean = false;
+let movementIntervalId: number; //Interval ID is needed to make sure multiple intervals dont interfere with each other
+
+// ALL FUNCTIONS 
+
 // gets a random multiple of 20 between 0 and max range
 // * probably a more efficient way of doing this because 
 //   worst case is extremely inefficient but this is my solution for now
 const getRandomNumber = (max: number, increment: number): number => {
-
   let randomNumber = Math.floor(Math.random()* max)
   
   if(randomNumber % increment === 0 || randomNumber === 0){
     return randomNumber;
   }
-  
   return getRandomNumber(max, increment);
 }
+
 //I want food to move to a new random space if player and food are in the same place
 const moveFood = () => {
   let foodPlacementX = getRandomNumber(680, 20);
@@ -56,23 +71,6 @@ const moveFood = () => {
   }
   //if we make it this far then food is where it should be so do nothing
 }
-
-//food is always moved on initial load
-moveFood();
-
-//visual output tests
-// let currentXPosOutput = document.querySelector<HTMLParagraphElement>('#playerX')!;
-// let currentYPosOutput = document.querySelector<HTMLParagraphElement>('#playerY')!;
-// const playerStyleTop = getComputedStyle(player).getPropertyValue('top')
-// const playerStyleLeft = getComputedStyle(player).getPropertyValue('left')
-
-// currentYPosOutput.innerHTML = `current Y position: ${playerStyleTop}`;
-// currentXPosOutput.innerHTML = `current X position: ${playerStyleLeft}`;
-
-let score = document.querySelector<HTMLParagraphElement>('#score')!;
-let scoreOutput: number = 0;
-let isGrowSnake: boolean = false;
-let movementIntervalId: number; //Interval ID is needed to make sure multiple intervals dont interfere with each other
 
 const handleGameOver = (typeOfLoss: string, isGrowSnake: boolean): void => {
   if(typeOfLoss === "OutOfBounds"){
@@ -255,6 +253,7 @@ const handleSelfCollision = (arr: HTMLDivElement[]) => {
   isGrowSnake = false;
 }
 
+moveFood(); //food is always moved on initial load
 let lastMove: string = "";
 //will implement this after deadline for refined movement
 //let movementQueue: string[] = [];
@@ -262,8 +261,8 @@ let lastMove: string = "";
 const handlePlayerMovement = (e: KeyboardEvent) => {
   e.preventDefault(); // to prevent arrows scrolling the window up
   //e.stopPropagation();
-  //"player.style.${attr}" is of type "CSSInlineStyle" so in order for this to work how I expect
-  // I need the top and left attributes of player to be inline styles beforehand
+  //"player.style.${attr}" is of type "CSSInlineStyle" so in order for this to work how I 
+  //expect I need the top and left attributes of player to be inline styles beforehand
   let currentYPos: string | number = snakeNodeArr[0].style.top;
   let currentXPos: string | number = snakeNodeArr[0].style.left;
 
@@ -271,6 +270,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
   currentXPos = currentXPos.replace("px", ""); // e.g. currentXPos = "0"
 
   switch(e.key){
+
     case "w":
     case "ArrowUp":
       //if the last key I pressed is in the opposite direction of where I'm trying to move i want to just keep moving
@@ -282,8 +282,6 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
         // console.log(lastMove) // test
         // ALWAYS make sure the last interval is cleared before setting a new one
         clearInterval(movementIntervalId);
-        
-        //TODO AFTER DEADLINE: different game modes will have different intervals to make it harder or easier
         movementIntervalId = setInterval(() => { //setInterval is how i can get multiple movements with one keypress
           currentYPos = handleMoveUp(+currentXPos, +currentYPos);
           //all collisions should always be checked once the player has finished moving
@@ -292,6 +290,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
         }, 100);
         break;
       }
+
     case "s":
     case "ArrowDown":
       if(lastMove === "ArrowUp" || lastMove === "w"){
@@ -325,6 +324,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
         }, 100);
         break; 
       }
+
     case "d":
     case "ArrowRight":
       if(lastMove === "ArrowLeft" || lastMove === "a"){
@@ -341,6 +341,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
       }, 100);
       break;
       }
+
     default:
       break;
   }
@@ -349,6 +350,7 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
 
 
 document.addEventListener("keydown", handlePlayerMovement);
+//just to reload the page with the r key at any time
 document.addEventListener("keydown", ((e:KeyboardEvent) => {
   if(e.key === "r"){
     location.reload()
