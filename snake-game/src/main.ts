@@ -13,8 +13,11 @@ import './style.css';
 
 const player = document.querySelector<HTMLDivElement>('#player')!;
 const food = document.querySelector<HTMLDivElement>('#food')!;
+const gameOverScreen = document.querySelector<HTMLDivElement>('#gameOverScreen')!;
+const OutofBoundsScreen = document.querySelector<HTMLDivElement>('#OutOfBoundsScreen')!;
 const gameArea = document.querySelector<HTMLElement>('.game-area')!;
 const snakeNodeList = document.querySelectorAll<HTMLDivElement>(".snake-body");
+
 //need to convert the nodeList to an array to use real array methods
 //because you can't use array.push in a NodeList
 const snakeNodeArr: HTMLDivElement[] = [];
@@ -71,21 +74,20 @@ let scoreOutput: number = 0;
 let isGrowSnake: boolean = false;
 let movementIntervalId: number; //Interval ID is needed to make sure multiple intervals dont interfere with each other
 
-
-const handleGameOver = (typeOfLoss: string, isGrowSnake: boolean) => {
+const handleGameOver = (typeOfLoss: string, isGrowSnake: boolean): void => {
   if(typeOfLoss === "OutOfBounds"){
     document.removeEventListener('keydown', handlePlayerMovement)
     player.style.background = "grey";
     //then trigger a pop up saying game over
-    alert("Out of Bounds! Press the 'r' key to restart!")
+    OutofBoundsScreen.style.display = "block";
     //if grow snake is not the reason for selfCollision then I really ran into myself, so run the code below
-  } else if (typeOfLoss === "SelfCollision" && !isGrowSnake){
-    player.style.background = "grey";
+  } else if(typeOfLoss === "SelfCollision" && !isGrowSnake){
     document.removeEventListener('keydown', handlePlayerMovement)
-    alert("You ran into yourself:( Press the 'r' key to restart!")
+    gameOverScreen.style.display = "block";
+    player.style.background = "grey";
   }
 
-  //if im here that means growSnake() was the reason this function fired, so false alarm do nothing 
+  //if im here that means growSnake() was the reason this function fired, so false alarm do nothing
 }
 
 //ALL THE MOVE FUNCTIONS WITH THE EXCEPTION OF PLAYERMOVE ARE THE EXACT SAME LOGIC 
@@ -123,7 +125,6 @@ const handleMoveUp = (XPosition: number, YPosition: number, currentIndex:number 
   }
   return newYPosition;
 }
-
 
 const handleMoveDown = (XPosition: number, YPosition: number, currentIndex: number = 0) => {
   let yOldSnapShot: number = YPosition;
@@ -246,6 +247,7 @@ const handleSelfCollision = (arr: HTMLDivElement[]) => {
   //i = 2 because block 3 is the closest block you can collide with yourself 
   for(let i = 2; i < arr.length; i++){
     if(XPos === arr[i].style.left && YPos === arr[i].style.top){
+      clearInterval(movementIntervalId)
       handleGameOver("SelfCollision", isGrowSnake);
     }
   }
@@ -259,7 +261,7 @@ let lastMove: string = "";
 
 const handlePlayerMovement = (e: KeyboardEvent) => {
   e.preventDefault(); // to prevent arrows scrolling the window up
-
+  //e.stopPropagation();
   //"player.style.${attr}" is of type "CSSInlineStyle" so in order for this to work how I expect
   // I need the top and left attributes of player to be inline styles beforehand
   let currentYPos: string | number = snakeNodeArr[0].style.top;
@@ -343,6 +345,8 @@ const handlePlayerMovement = (e: KeyboardEvent) => {
       break;
   }
 }
+
+
 
 document.addEventListener("keydown", handlePlayerMovement);
 document.addEventListener("keydown", ((e:KeyboardEvent) => {

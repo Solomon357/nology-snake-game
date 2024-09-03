@@ -23,11 +23,37 @@
           </div>
           <button id="mode">Mode</button>
         </div> -->
-        <p id="score">score: 0 </p>
+        <p class="score" id="score">score: 0</p>
       </section>
     </header>
 
     <main>
+      <div class="game-popup" id="gameOverScreen">
+        <div class="popup-container">
+          <h3>GAME OVER</h3>
+          <p>You ran into yourself</p>
+          <button 
+            type="reset" 
+            class="popup-container__btn" 
+            onclick="window.location.reload();">
+            Play Again?
+          </button>
+        </div>
+      </div>
+
+      <div class="game-popup" id="OutOfBoundsScreen">
+        <div class="popup-container">
+          <h3>GAME OVER</h3>
+          <p>You ran out of bounds</p>
+          <button 
+            type="reset" 
+            class="popup-container__btn" 
+            onclick="window.location.reload();">
+            Play Again?
+          </button>
+        </div>
+      </div>
+
       <section class="game-area">
         <div class="snake-body" id="player" tabindex="-1" style="left: 100px; top: 60px;"></div>
         <div class="food" id="food" tabindex="-1"></div>
