@@ -1,11 +1,11 @@
 import './style.css';
 // TODO:
 //       1. refine player movement so its as responsive as can be 
-
-//       3. change hardcoded values for game-area container
+//       2. change hardcoded values for game-area container
 
 //  QUALITY OF LIFE THINGS TO DEAL WITH after deadline:
 //  - sort out background music
+//  - add a sound effect sound for when food is eaten
 //  - fix bug where player can pause when player holds key down
 //  - further refine movement so user input is very responsive, and can't double back on themselves
 //  - be able to change theme
@@ -19,9 +19,13 @@ const gameOverScreen = document.querySelector<HTMLDivElement>('#gameOverScreen')
 const OutofBoundsScreen = document.querySelector<HTMLDivElement>('#OutOfBoundsScreen')!;
 const options = document.querySelector<HTMLSelectElement>('#changeMode')!;
 const gameArea = document.querySelector<HTMLElement>('.game-area')!;
-
+const audio = document.querySelector<HTMLAudioElement>(".bgm")!;
 const snakeNodeList = document.querySelectorAll<HTMLDivElement>(".snake-body");
 
+//play the background music immediately
+audio.volume = 0.05;
+audio.currentTime = 18;
+audio.play();
 //need to convert the nodeList to an array to use real array methods
 //because you can't use array.push in a NodeList
 const snakeNodeArr: HTMLDivElement[] = [];
