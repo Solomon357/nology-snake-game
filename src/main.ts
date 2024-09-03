@@ -1,7 +1,7 @@
 import './style.css';
 // TODO:
 //       1. refine player movement so its as responsive as can be 
-//       2. implement highScore
+
 //       3. change hardcoded values for game-area container
 
 //  QUALITY OF LIFE THINGS TO DEAL WITH after deadline:
@@ -9,6 +9,7 @@ import './style.css';
 //  - fix bug where player can pause when player holds key down
 //  - further refine movement so user input is very responsive, and can't double back on themselves
 //  - be able to change theme
+//  - implement leaderboard that will display all time highScores of all gameModes
 //  - if somehow the snake length is equal to grid area width*height then GAMEWIN condition is met
 
 //access to HTML elements
@@ -80,6 +81,7 @@ const moveFood = () => {
 }
 
 const onModeChange = () => {
+  //grabbing the value from my drop down select
   gameMode = +options.value;
   console.log(gameMode)
 }
