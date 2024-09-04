@@ -4,10 +4,9 @@ import './style.css';
 //       2. change hardcoded values for game-area container
 
 //  QUALITY OF LIFE THINGS TO DEAL WITH after deadline:
-//  - sort out background music
+//  - give user the option of muting the music
 //  - add a sound effect sound for when food is eaten
 //  - fix bug where player can pause when player holds key down
-//  - further refine movement so user input is very responsive, and can't double back on themselves
 //  - be able to change theme
 //  - implement leaderboard that will display all time highScores of all gameModes
 //  - if somehow the snake length is equal to grid area width*height then GAMEWIN condition is met
@@ -23,7 +22,7 @@ const audio = document.querySelector<HTMLAudioElement>(".bgm")!;
 const snakeNodeList = document.querySelectorAll<HTMLDivElement>(".snake-body");
 
 //play the background music immediately
-audio.volume = 0.05;
+audio.volume = 0.5;
 audio.currentTime = 2;
 audio.play();
 //need to convert the nodeList to an array to use real array methods
@@ -36,7 +35,6 @@ for(const elem of snakeNodeList){
 //console.log(snakeNodeArr) //test
 
 //visual snake head position tracking in DOM
-
 // let currentXPosOutput = document.querySelector<HTMLParagraphElement>('#playerX')!;
 // let currentYPosOutput = document.querySelector<HTMLParagraphElement>('#playerY')!;
 // const playerStyleTop = getComputedStyle(player).getPropertyValue('top')
@@ -51,7 +49,7 @@ let scoreOutput: number = 0;
 let isGrowSnake: boolean = false;
 let lastMove: string = "";
 let movementIntervalId: number; //Interval ID is needed to make sure multiple intervals dont interfere with each other
-let gameMode: number = 100; // default speed is easy
+let gameMode: number = 60; // default speed is medium
 
 // ALL FUNCTIONS 
 
@@ -84,7 +82,7 @@ const moveFood = () => {
   //if we make it this far then food is where it should be so do nothing
 }
 
-const onModeChange = () => {
+const handleModeChange = () => {
   //grabbing the value from my drop down select
   gameMode = +options.value;
   console.log(gameMode)
@@ -112,7 +110,7 @@ const handleMoveUp = (XPosition: number, YPosition: number, currentIndex:number 
   //need an initial snapshot of where exactly this block should move to
   let yOldSnapShot: number = YPosition;
   let xOldSnapShot: number = XPosition;
-  //need a new snapshot as soon as we access the next block so the next block knows where to move
+  //need a new snapshot as soon as we access the next block so the block after that knows where to move
   let yNewSnapshot: number;
   let xNewSnapshot: number;
 
@@ -271,7 +269,7 @@ const handleSelfCollision = (arr: HTMLDivElement[]) => {
 }
 
 
-options.onchange = onModeChange; //handle the options change for game mode
+options.onchange = handleModeChange; //handle the options change for game mode
 moveFood(); //food is always moved on initial load
 
 //will implement this after deadline for refined movement
