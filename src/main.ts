@@ -11,6 +11,7 @@ import './style.css';
 //  - implement leaderboard that will display all time highScores of all gameModes
 //  - if somehow the snake length is equal to grid area width*height then GAMEWIN condition is met
 
+
 //access to HTML elements
 const player = document.querySelector<HTMLDivElement>('#player')!;
 const food = document.querySelector<HTMLDivElement>('#food')!;
